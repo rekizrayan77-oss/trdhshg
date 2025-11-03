@@ -146,18 +146,17 @@ function moveIA(){
   });
 }
 
-// --- Dessin fusée ---
+// --- Dessin fusée original ---
 function drawRocket(x,y,w,h,color){
-  ctx.save();
-  ctx.fillStyle=color;
-  ctx.shadowBlur=15;
-  ctx.shadowColor=color;
-  ctx.beginPath();
-  ctx.moveTo(x+w/2,y); ctx.lineTo(x+0.2*w,y+0.3*h); ctx.lineTo(x+0.8*w,y+0.3*h); ctx.closePath(); ctx.fill();
-  ctx.fillRect(x+0.25*w,y+0.3*h,0.5*w,0.6*h);
-  ctx.fillStyle="#ff4500"; ctx.shadowColor="#ff4500";
-  ctx.beginPath(); ctx.moveTo(x+0.25*w,y+0.9*h); ctx.lineTo(x+0.35*w,y+1.1*h); ctx.lineTo(x+0.5*w,y+1.0*h); ctx.lineTo(x+0.65*w,y+1.1*h); ctx.lineTo(x+0.75*w,y+0.9*h); ctx.closePath(); ctx.fill();
-  ctx.restore();
+  ctx.fillStyle=color; ctx.shadowBlur=15; ctx.shadowColor=color;
+  ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
+  ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w*0.3,y+h*0.3); ctx.lineTo(x+w*0.7,y+h*0.3); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x+w*0.3,y+h*0.8); ctx.lineTo(x+w*0.1,y+h); ctx.lineTo(x+w*0.3,y+h); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x+w*0.7,y+h*0.8); ctx.lineTo(x+w*0.9,y+h); ctx.lineTo(x+w*0.7,y+h); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#87CEEB'; ctx.beginPath(); ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#FF4500'; ctx.shadowBlur=10; ctx.shadowColor='#FF4500'; ctx.beginPath();
+  ctx.moveTo(x+w*0.35,y+h); ctx.lineTo(x+w*0.45,y+h*1.2); ctx.lineTo(x+w*0.5,y+h*1.1); ctx.lineTo(x+w*0.55,y+h*1.2); ctx.lineTo(x+w*0.65,y+h); ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
 }
 function drawPlayer(){
   drawRocket(player.x,player.y,player.w,player.h,'#00d4ff');
@@ -167,11 +166,11 @@ function drawPlayer(){
 function drawIA(){iaPlayers.forEach(ai=>{if(ai.alive){drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color); ctx.fillStyle='white'; ctx.font='12px Arial'; ctx.textAlign='center'; ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);}});}
 
 // --- Dessin astéroïdes et bonus ---
-function drawAsteroids(){asteroids.forEach(ast=>{ctx.fillStyle='#8b8b8b'; ctx.beginPath(); ctx.arc(ast.x+ast.w/2,ast.y+ast.h/2,ast.w/2,0,Math.PI*2); ctx.fill();});}
+function drawAsteroids(){asteroids.forEach(ast=>{ctx.fillStyle='#8b8b8b'; ctx.strokeStyle='#5a5a5a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(ast.x+ast.w/2,ast.y+ast.h/2,ast.w/2,0,Math.PI*2); ctx.fill(); ctx.stroke();});}
 function drawBonuses(){bonuses.forEach(b=>{
   ctx.fillStyle=b.color;
   ctx.beginPath();
-  if(b.type==='shield'){ctx.rect(b.x,b.y,b.w,b.h);} 
+  if(b.type==='shield'){ctx.rect(b.x,b.y,b.w,b.h);}
   else if(b.type==='laser'){ctx.moveTo(b.x+b.w/2,b.y); ctx.lineTo(b.x+b.w,b.y+b.h); ctx.lineTo(b.x,b.y+b.h); ctx.closePath();}
   else if(b.type==='score'){ctx.arc(b.x+b.w/2,b.y+b.h/2,b.w/2,0,Math.PI*2);}
   ctx.fill();
