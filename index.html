@@ -5,115 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fusée Spatiale</title>
 <style>
-body {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow: hidden;
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(180deg, #000428 0%, #004e92 100%);
-  color: white;
-}
-#gameContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-canvas {
-  display: block;
-  background: radial-gradient(circle at 50% 50%, #001a33 0%, #000000 100%);
-  border: 3px solid #00d4ff;
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-  max-width: 100%;
-  max-height: 100%;
-}
-#screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 10;
-  padding: 20px;
-}
-h1 { font-size:48px;margin:20px 0;text-shadow:0 0 20px #00d4ff;animation:pulse 2s infinite;}
-@keyframes pulse {0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
-button {
-  padding:15px 40px;
-  margin:10px;
-  font-size:20px;
-  font-weight:bold;
-  background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  color:white;
-  border:none;
-  border-radius:50px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  box-shadow:0 4px 15px rgba(102,126,234,0.4);
-}
-button:hover {transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.6);}
-button:active {transform:translateY(0);}
-input {
-  padding:12px 20px;
-  margin:10px;
-  font-size:18px;
-  border:2px solid #00d4ff;
-  border-radius:25px;
-  background: rgba(255,255,255,0.1);
-  color:white;
-  text-align:center;
-  outline:none;
-  min-width:250px;
-}
-input::placeholder {color: rgba(255,255,255,0.5);}
-#scoreDisplay {
-  position:absolute;
-  top:20px;
-  left:20px;
-  font-size:24px;
-  font-weight:bold;
-  text-shadow:0 0 10px #00d4ff;
-  z-index:5;
-}
-#pauseBtn {
-  position:absolute;
-  top:20px;
-  right:20px;
-  padding:10px 20px;
-  font-size:18px;
-  z-index:5;
-  display:none;
-}
-.podium {
-  background: rgba(0,0,0,0.5);
-  padding:20px;
-  border-radius:15px;
-  margin-top:20px;
-  max-height:400px;
-  overflow-y:auto;
-}
-.podium ol {
-  list-style:none;
-  padding:0;
-  margin:10px 0;
-}
-.podium li {
-  padding:10px;
-  margin:5px 0;
-  background: rgba(102,126,234,0.3);
-  border-radius:10px;
-  font-size:18px;
-}
-p {font-size:20px;margin:15px 0;}
+body {margin:0;padding:0;box-sizing:border-box;height:100vh;overflow:hidden;font-family:Arial,sans-serif;background:linear-gradient(180deg,#000428 0%,#004e92 100%);color:white;}
+#gameContainer{position:relative;width:100%;height:100%;display:flex;justify-content:center;align-items:center;}
+canvas{display:block;background:radial-gradient(circle at 50% 50%,#001a33 0%,#000 100%);border:3px solid #00d4ff;box-shadow:0 0 30px rgba(0,212,255,0.5);max-width:100%;max-height:100%;}
+#screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(0,0,0,0.85);z-index:10;padding:20px;}
+h1{font-size:48px;margin:20px 0;text-shadow:0 0 20px #00d4ff;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+button{padding:15px 40px;margin:10px;font-size:20px;font-weight:bold;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:50px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(102,126,234,0.4);}
+button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.6);}
+button:active{transform:translateY(0);}
+input{padding:12px 20px;margin:10px;font-size:18px;border:2px solid #00d4ff;border-radius:25px;background:rgba(255,255,255,0.1);color:white;text-align:center;outline:none;min-width:250px;}
+input::placeholder{color:rgba(255,255,255,0.5);}
+#scoreDisplay{position:absolute;top:20px;left:20px;font-size:24px;font-weight:bold;text-shadow:0 0 10px #00d4ff;z-index:5;}
+#pauseBtn{position:absolute;top:20px;right:20px;padding:10px 20px;font-size:18px;z-index:5;display:none;}
+.podium{background:rgba(0,0,0,0.5);padding:20px;border-radius:15px;margin-top:20px;max-height:400px;overflow-y:auto;}
+.podium ol{list-style:none;padding:0;margin:10px 0;}
+.podium li{padding:10px;margin:5px 0;background:rgba(102,126,234,0.3);border-radius:10px;font-size:18px;}
+p{font-size:20px;margin:15px 0;}
 </style>
 </head>
 <body>
@@ -128,44 +36,36 @@ p {font-size:20px;margin:15px 0;}
 </div>
 
 <script>
-let screen = document.getElementById('screen');
-let canvas = document.getElementById('game');
-let ctx = canvas.getContext('2d');
-let scoreDisplay = document.getElementById('scoreDisplay');
-let scoreSpan = document.getElementById('score');
-let pauseBtn = document.getElementById('pauseBtn');
+// --- Variables ---
+let screen=document.getElementById('screen');
+let canvas=document.getElementById('game');
+let ctx=canvas.getContext('2d');
+let scoreDisplay=document.getElementById('scoreDisplay');
+let scoreSpan=document.getElementById('score');
+let pauseBtn=document.getElementById('pauseBtn');
 
-let pseudo = '';
-let mode = 'solo';
-let difficulty = 'easy';
-let score = 0;
-let bestScore = 0;
-let gameOver = false;
-let gameRunning = false;
-let gamePaused = false;
-let keys = {};
+let pseudo='',mode='solo',difficulty='easy',score=0,bestScore=0,gameOver=false,gameRunning=false,gamePaused=false,keys={};
 
-let player = { x: 280, y: 740, w: 40, h: 60, hasShield:false, hasLaser:false };
-let asteroids = [];
-let bonuses = [];
-let bullets = [];
-let iaPlayers = [];
-let gameScores = [];
-let nextBonusScore = 100;
+let player={x:280,y:740,w:40,h:60,hasShield:false,hasLaser:false};
+let asteroids=[],bonuses=[],bullets=[],iaPlayers=[],nextBonusScore=100;
 
-let asteroidSpawnTimer = 0;
-let asteroidSpawnInterval = 60;
+// Bonus images
+const imgShield=new Image(); imgShield.src='https://i.ibb.co/WpB4T2L/shield.png';
+const imgLaser=new Image(); imgLaser.src='https://i.ibb.co/FbNkWjM/laser.png';
+const imgCup=new Image(); imgCup.src='https://i.ibb.co/0mKxTnT/cup.png';
 
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  keys[e.key] = true;
-  if (gameRunning && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
-  if(e.code==='Space' && player.hasLaser) shoot();
+// --- Inputs ---
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  keys[e.key]=true;
+  if(gameRunning&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
+  if(e.code==='Space'&&player.hasLaser) shoot();
 });
-document.addEventListener('keyup', e => { if(e.target.tagName==='INPUT') return; keys[e.key]=false; });
+document.addEventListener('keyup',e=>{if(e.target.tagName==='INPUT') return; keys[e.key]=false;});
 
-document.getElementById('startBtn').addEventListener('click', menuPseudo);
-pauseBtn.addEventListener('click', togglePause);
+// --- Menus ---
+document.getElementById('startBtn').addEventListener('click',menuPseudo);
+pauseBtn.addEventListener('click',togglePause);
 
 function togglePause(){
   if(gamePaused){
@@ -173,39 +73,38 @@ function togglePause(){
     screen.style.display='none';
     pauseBtn.textContent='⏸ Pause';
     requestAnimationFrame(update);
-  } else {
-    gamePaused=true;
-    pauseBtn.textContent='▶ Reprendre';
+  }else{
+    gamePaused=true; pauseBtn.textContent='▶ Reprendre';
     showPauseMenu();
   }
 }
 
 function showPauseMenu(){
   screen.style.display='flex';
-  screen.innerHTML = `<h1>⏸ Pause</h1><p style="font-size:32px;color:#00d4ff;">Score: ${score}</p>
+  screen.innerHTML=`<h1>⏸ Pause</h1><p style="font-size:32px;color:#00d4ff;">Score: ${score}</p>
     <button id="resumeBtn">▶ Reprendre</button>
     <button id="menuPauseBtn">Menu Principal</button>`;
-  document.getElementById('resumeBtn').addEventListener('click', togglePause);
-  document.getElementById('menuPauseBtn').addEventListener('click',()=>{gamePaused=false;gameRunning=false;gameOver=true;pauseBtn.style.display='none';scoreDisplay.style.display='none';asteroids=[];iaPlayers=[];menuMain();});
+  document.getElementById('resumeBtn').addEventListener('click',togglePause);
+  document.getElementById('menuPauseBtn').addEventListener('click',()=>{
+    gamePaused=false; gameRunning=false; gameOver=true; pauseBtn.style.display='none'; scoreDisplay.style.display='none';
+    asteroids=[];iaPlayers=[];bonuses=[];bullets=[];menuMain();
+  });
 }
 
 function menuPseudo(){
-  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+  screen.innerHTML=`<h1>🚀 Fusée Spatiale 🚀</h1>
     <p>Entrez votre pseudo:</p>
     <input id="pseudoInput" placeholder="Votre pseudo" maxlength="15"/>
     <button id="validatePseudo">Valider</button>`;
   document.getElementById('validatePseudo').addEventListener('click',setPseudo);
-  document.getElementById('pseudoInput').addEventListener('keypress', e=>{if(e.key==='Enter') setPseudo();});
+  document.getElementById('pseudoInput').addEventListener('keypress',e=>{if(e.key==='Enter') setPseudo();});
   document.getElementById('pseudoInput').focus();
 }
 
-function setPseudo(){
-  pseudo=document.getElementById('pseudoInput').value.trim()||'Joueur';
-  menuMain();
-}
+function setPseudo(){pseudo=document.getElementById('pseudoInput').value.trim()||'Joueur'; menuMain();}
 
 function menuMain(){
-  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+  screen.innerHTML=`<h1>🚀 Fusée Spatiale 🚀</h1>
     <p>Bonjour ${pseudo}!</p>
     <button id="soloBtn">Solo</button>
     <button id="multiBtn">Multijoueur</button>`;
@@ -214,7 +113,7 @@ function menuMain(){
 }
 
 function menuMulti(){
-  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+  screen.innerHTML=`<h1>🚀 Fusée Spatiale 🚀</h1>
     <p>Choisir la difficulté de l'IA:</p>
     <button id="easyBtn">Facile</button>
     <button id="mediumBtn">Moyen</button>
@@ -224,300 +123,152 @@ function menuMulti(){
   document.getElementById('hardBtn').addEventListener('click',()=>startMulti('hard'));
 }
 
+// --- Initialisation ---
 function startSolo(){mode='solo';initGame();}
 function startMulti(diff){mode='multi';difficulty=diff;initGame();}
 
 function initGame(){
-  screen.style.display='none';
-  scoreDisplay.style.display='block';
-  pauseBtn.style.display='block';
-  pauseBtn.textContent='⏸ Pause';
-  gameOver=false; gameRunning=true; gamePaused=false;
-  score=0; scoreSpan.textContent=score;
-  asteroids=[]; bonuses=[]; bullets=[];
-  asteroidSpawnTimer=0; asteroidSpawnInterval=60;
+  screen.style.display='none'; scoreDisplay.style.display='block'; pauseBtn.style.display='block'; pauseBtn.textContent='⏸ Pause';
+  gameOver=false; gameRunning=true; gamePaused=false; score=0; scoreSpan.textContent=score;
+  asteroids=[]; bonuses=[]; bullets=[]; asteroidSpawnTimer=0; asteroidSpawnInterval=60;
   player={x:280,y:740,w:40,h:60,hasShield:false,hasLaser:false};
   nextBonusScore=100;
   if(mode==='multi') initIA();
-  gameLoop();
+  requestAnimationFrame(update);
 }
 
 function initIA(){
-  iaPlayers=[];
-  const colors=['#ff6b6b','#ffd93d','#6bcf7f','#a29bfe'];
-  const names=['Astro','Nova','Cosmos','Stellar'];
+  iaPlayers=[]; const colors=['#ff6b6b','#ffd93d','#6bcf7f','#a29bfe']; const names=['Astro','Nova','Cosmos','Stellar'];
   for(let i=0;i<4;i++){
-    iaPlayers.push({x:100+i*120,y:740,w:40,h:60,color:colors[i],name:names[i],alive:true,directionX:0,directionY:0,speed:3,hasShield:false,hasLaser:false});
+    iaPlayers.push({x:100+i*120,y:740,w:40,h:60,color:colors[i],name:names[i],alive:true,direction:0,speed:3,hasShield:false,hasLaser:false});
   }
 }
 
+// --- Fonctions de jeu ---
 function spawnAsteroid(){
   let size=20+Math.random()*30;
   let speed=2+Math.random()*2+(score/500);
-  if(mode==='multi' && difficulty==='hard') speed+=2;
+  if(mode==='multi'&&difficulty==='hard') speed+=2;
   asteroids.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,speed:speed});
 }
 
 function spawnBonus(){
-  const types=['shield','laser','score'];
-  const type=types[Math.floor(Math.random()*types.length)];
-  let size=40;
-  let y=-size;
-  let x=Math.random()*(canvas.width-size);
-  bonuses.push({x,y,w:size,h:size,type,duration:30000}); // 30s
+  let type=Math.floor(Math.random()*3); // 0=shield,1=laser,2=cup
+  let img=type===0?imgShield:type===1?imgLaser:imgCup;
+  bonuses.push({x:Math.random()*(canvas.width-40),y:-40,w:40,h:40,type:type,img:img});
 }
 
+// --- Player/IA movement ---
 function movePlayer(){
   if(keys.ArrowLeft && player.x>0) player.x-=6;
   if(keys.ArrowRight && player.x+player.w<canvas.width) player.x+=6;
-  if(keys.ArrowUp && player.y>0) player.y-=6;
-  if(keys.ArrowDown && player.y+player.h<canvas.height) player.y+=6;
+  if(keys.ArrowUp && player.y>0) player.y-=4;
+  if(keys.ArrowDown && player.y+player.h<canvas.height) player.y+=4;
 }
 
 function moveIA(){
   iaPlayers.forEach(ai=>{
     if(!ai.alive) return;
-    // IA simple pour bouger et éviter les asteroids
-    ai.directionX=0; ai.directionY=0;
-    // chercher le plus proche asteroide
-    let threat=asteroids.find(ast=>ast.y>ai.y-200 && Math.abs(ast.x+ast.w/2-(ai.x+ai.w/2))<60);
-    if(difficulty==='easy'){if(Math.random()<0.02) ai.directionX=Math.random()<0.5?-1:1;}
-    else if(difficulty==='medium'){
-      if(threat) ai.directionX=(threat.x+threat.w/2)>(ai.x+ai.w/2)?-1:1;
-    } else if(difficulty==='hard'){
-      if(threat) ai.directionX=(threat.x+threat.w/2)>(ai.x+ai.w/2)?-1:1;
+    // IA simple avec tentative de ramassage bonus
+    let target=null;
+    bonuses.forEach(b=>{if(b.y>ai.y-200 && Math.abs(b.x-ai.x)<50) target=b;});
+    if(target){
+      ai.direction=(target.x>ai.x)?1:-1;
+      if(target.y<ai.y) ai.y-=2; else ai.y+=2;
+    }else{
+      if(difficulty==='easy'){if(Math.random()<0.02) ai.direction=Math.random()<0.5?-1:1;}
+      else if(difficulty==='medium'){ai.direction=0;}
+      else ai.direction=0;
     }
-    // bonus
-    let bonusTarget=bonuses[0];
-    if(bonusTarget){
-      if(ai.x+ai.w/2<bonusTarget.x+bonusTarget.w/2) ai.directionX=1;
-      else ai.directionX=-1;
-      if(ai.y+ai.h/2<bonusTarget.y+bonusTarget.h/2) ai.directionY=1;
-      else ai.directionY=-1;
-    }
-    ai.x+=ai.directionX*ai.speed;
-    ai.y+=ai.directionY*ai.speed;
+    ai.x+=ai.direction*ai.speed;
     ai.x=Math.max(0,Math.min(canvas.width-ai.w,ai.x));
-    ai.y=Math.max(0,Math.min(canvas.height-ai.h,ai.y));
   });
 }
 
-function drawRocket(x,y,w,h,color,glowColor){
-  ctx.fillStyle=color;
-  ctx.shadowBlur=15;
-  ctx.shadowColor=glowColor;
-  ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
-  ctx.beginPath();
-  ctx.moveTo(x+w/2,y);
-  ctx.lineTo(x+w*0.3,y+h*0.3);
-  ctx.lineTo(x+w*0.7,y+h*0.3);
-  ctx.closePath();
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(x+w*0.3,y+h*0.8);
-  ctx.lineTo(x+w*0.1,y+h);
-  ctx.lineTo(x+w*0.3,y+h);
-  ctx.closePath();
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(x+w*0.7,y+h*0.8);
-  ctx.lineTo(x+w*0.9,y+h);
-  ctx.lineTo(x+w*0.7,y+h);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle='#87CEEB';
-  ctx.beginPath();
-  ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur=0;
+// --- Dessin ---
+function drawRocket(x,y,w,h,color){
+  ctx.fillStyle=color; ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
+  ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w*0.3,y+h*0.3); ctx.lineTo(x+w*0.7,y+h*0.3); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#00d4ff'; ctx.beginPath(); ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2); ctx.fill();
 }
 
-function drawPlayer(){
-  drawRocket(player.x,player.y,player.w,player.h,'#00d4ff','#00d4ff');
-  ctx.fillStyle='#00d4ff';
-  ctx.font='bold 12px Arial';
-  ctx.textAlign='center';
-  ctx.fillText(pseudo,player.x+player.w/2,player.y-5);
-  if(player.hasShield){
-    ctx.strokeStyle='blue';
-    ctx.lineWidth=4;
-    ctx.beginPath();
-    ctx.arc(player.x+player.w/2,player.y+player.h/2,player.w,0,Math.PI*2);
-    ctx.stroke();
-  }
-}
+function drawPlayer(){drawRocket(player.x,player.y,player.w,player.h,'#00d4ff');}
 
-function drawIA(){
-  iaPlayers.forEach(ai=>{
-    if(ai.alive){
-      drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color,ai.color);
-      ctx.fillStyle='white';
-      ctx.font='12px Arial';
-      ctx.textAlign='center';
-      ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);
-      if(ai.hasShield){
-        ctx.strokeStyle='blue';
-        ctx.lineWidth=4;
-        ctx.beginPath();
-        ctx.arc(ai.x+ai.w/2,ai.y+ai.h/2,ai.w,0,Math.PI*2);
-        ctx.stroke();
-      }
-    }
-  });
-}
+function drawIA(){iaPlayers.forEach(ai=>{if(ai.alive){drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color); ctx.fillStyle='white'; ctx.font='12px Arial'; ctx.textAlign='center'; ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);}});}
 
-function drawAsteroids(){
-  asteroids.forEach(ast=>{
-    ctx.fillStyle='#8b8b8b';
-    ctx.strokeStyle='#5a5a5a';
-    ctx.lineWidth=2;
-    ctx.shadowBlur=10;
-    ctx.shadowColor='#ffffff';
-    ctx.beginPath();
-    ctx.arc(ast.x+ast.w/2,ast.y+ast.h/2,ast.w/2,0,Math.PI*2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur=0;
-  });
-}
+function drawAsteroids(){asteroids.forEach(a=>{ctx.fillStyle='#8b8b8b'; ctx.beginPath(); ctx.arc(a.x+a.w/2,a.y+a.h/2,a.w/2,0,Math.PI*2); ctx.fill();});}
 
-function drawStars(){
-  ctx.fillStyle='white';
-  for(let i=0;i<50;i++){
-    let x=(i*137.5)%canvas.width;
-    let y=((i*137.5+score*2)%canvas.height);
-    ctx.fillRect(x,y,2,2);
-  }
-}
+function drawBonuses(){bonuses.forEach(b=>{ctx.drawImage(b.img,b.x,b.y,b.w,b.h);});}
 
-function drawBonuses(){
-  bonuses.forEach(b=>{
-    if(b.type==='shield'){
-      ctx.fillStyle='#00008B';
-      ctx.beginPath();
-      ctx.moveTo(b.x+b.w/2,b.y);
-      ctx.lineTo(b.x+b.w,b.y+b.h/2);
-      ctx.lineTo(b.x+b.w/2,b.y+b.h);
-      ctx.lineTo(b.x,b.y+b.h/2);
-      ctx.closePath();
-      ctx.fill();
-    } else if(b.type==='laser'){
-      ctx.fillStyle='red';
-      ctx.fillRect(b.x+b.w/4,b.y,b.w/2,b.h);
-    } else if(b.type==='score'){
-      ctx.fillStyle='yellow';
-      ctx.beginPath();
-      ctx.moveTo(b.x+b.w/2,b.y);
-      ctx.lineTo(b.x+b.w,b.y+b.h);
-      ctx.lineTo(b.x,b.y+b.h);
-      ctx.closePath();
-      ctx.fill();
-    }
-  });
-}
+function drawBullets(){bullets.forEach(b=>{ctx.fillStyle='red'; ctx.fillRect(b.x,b.y,b.w,b.h);});}
 
-function moveBullets(){
-  bullets.forEach((b,index)=>{
-    b.y-=b.speed;
-    ctx.fillStyle='cyan';
-    ctx.shadowBlur=5; ctx.shadowColor='cyan';
-    ctx.fillRect(b.x,b.y,4,12);
-    ctx.shadowBlur=0;
-    asteroids.forEach((a,ai)=>{
-      if(checkCollision(b,a)){
-        asteroids.splice(ai,1);
-        bullets.splice(index,1);
-        score+=10;
-        scoreSpan.textContent=score;
-      }
-    });
-    if(b.y<0) bullets.splice(index,1);
-  });
-}
+// --- Bullets ---
+function shoot(){bullets.push({x:player.x+player.w/2-2.5,y:player.y-10,w:5,h:10,speed:8});}
 
-function checkCollision(a,b){
-  return a.x<a.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
-}
+// --- Collision ---
+function checkCollision(a,b){return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;}
 
 function update(){
   if(!gameRunning || gameOver || gamePaused) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawStars();
-  movePlayer();
-  if(mode==='multi') moveIA();
-  asteroidSpawnTimer++;
-  if(asteroidSpawnTimer>=asteroidSpawnInterval){
-    spawnAsteroid();
-    asteroidSpawnTimer=0;
-    if(asteroidSpawnInterval>30) asteroidSpawnInterval-=0.5;
-  }
 
-  asteroids.forEach((ast,index)=>{
-    ast.y+=ast.speed;
-    if(ast.y>canvas.height){asteroids.splice(index,1);score+=10;scoreSpan.textContent=score;}
-    if(checkCollision(player,ast)&&!player.hasShield) endGame();
-    if(mode==='multi'){
-      iaPlayers.forEach(ai=>{if(ai.alive&&!ai.hasShield&&checkCollision(ai,ast)) ai.alive=false;});
-    }
+  // Stars
+  ctx.fillStyle='white'; for(let i=0;i<50;i++){let x=(i*137.5)%canvas.width; let y=((i*137.5+score*2)%canvas.height); ctx.fillRect(x,y,2,2);}
+
+  movePlayer(); if(mode==='multi') moveIA();
+
+  // Spawn asteroids
+  if(Math.random()<0.02) spawnAsteroid();
+  // Spawn bonuses
+  if(score>=nextBonusScore){spawnBonus(); nextBonusScore+=110;}
+
+  // Update asteroids
+  asteroids.forEach((a,i)=>{a.y+=a.speed;
+    if(a.y>canvas.height) {asteroids.splice(i,1); score+=10; scoreSpan.textContent=score;}
+    if(checkCollision(player,a) && !player.hasShield) endGame();
   });
 
-  bonuses.forEach((b,index)=>{
-    b.y+=2;
+  // Update bonuses
+  bonuses.forEach((b,i)=>{b.y+=2;
+    if(b.y>canvas.height) bonuses.splice(i,1);
     if(checkCollision(player,b)){
-      applyBonus(player,b);
-      bonuses.splice(index,1);
+      activateBonus(player,b.type); bonuses.splice(i,1);
     }
-    if(mode==='multi'){
-      iaPlayers.forEach(ai=>{
-        if(ai.alive&&checkCollision(ai,b)){applyBonus(ai,b);bonuses.splice(index,1);}
-      });
-    }
-    if(b.y>canvas.height) bonuses.splice(index,1);
   });
 
-  drawAsteroids();
-  drawBonuses();
-  drawPlayer();
-  if(mode==='multi') drawIA();
-  moveBullets();
+  // Update bullets
+  bullets.forEach((b,i)=>{
+    b.y-=b.speed;
+    asteroids.forEach((a,j)=>{if(checkCollision(b,a)){asteroids.splice(j,1); bullets.splice(i,1);}});
+    if(b.y<0) bullets.splice(i,1);
+  });
 
-  // apparition bonus selon score
-  if(score>=nextBonusScore){spawnBonus();nextBonusScore+=110;}
+  drawAsteroids(); drawPlayer(); drawIA(); drawBonuses(); drawBullets();
 
-  if(mode==='solo' && score>=5000){winGame();}
-  else requestAnimationFrame(update);
+  if(mode==='solo' && score>=5000){endGameWin();}
+  if(mode==='multi') iaPlayers.forEach(ai=>{if(ai.alive && score>=5000){endGameWin();}});
+
+  requestAnimationFrame(update);
 }
 
-function gameLoop(){update();}
-
-function shoot(){
-  bullets.push({x:player.x+player.w/2-2,y:player.y,speed:10});
+// --- Bonus activation ---
+function activateBonus(p,t){
+  if(t===0){p.hasShield=true; setTimeout(()=>p.hasShield=false,30000);}
+  if(t===1){p.hasLaser=true; setTimeout(()=>p.hasLaser=false,30000);}
+  if(t===2){score+=100; scoreSpan.textContent=score;}
 }
 
-function applyBonus(target,b){
-  if(b.type==='shield'){target.hasShield=true;setTimeout(()=>{target.hasShield=false;},30000);}
-  if(b.type==='laser'){target.hasLaser=true;setTimeout(()=>{target.hasLaser=false;},30000);}
-  if(b.type==='score'){score+=100;scoreSpan.textContent=score;}
+// --- End game ---
+function endGame(){gameOver=true; gameRunning=false; scoreDisplay.style.display='none'; pauseBtn.style.display='none';
+  screen.style.display='flex'; screen.innerHTML=`<h1>Partie terminée!</h1><p style="font-size:32px;color:#00d4ff;">Votre Score: ${score}</p>
+  <button onclick="menuMain()">Menu principal</button>`;
 }
 
-function endGame(){
-  gameOver=true;gameRunning=false;gamePaused=false;
-  scoreDisplay.style.display='none';pauseBtn.style.display='none';
-  screen.style.display='flex';
-  screen.innerHTML=`<h1>Partie terminée!</h1><p style="font-size:32px;color:#00d4ff;">Votre Score: ${score}</p><button id="restartBtn">Rejouer</button><button id="menuBtn">Menu principal</button>`;
-  document.getElementById('restartBtn').addEventListener('click',()=>{if(mode==='solo') startSolo(); else startMulti(difficulty);});
-  document.getElementById('menuBtn').addEventListener('click',menuMain);
+function endGameWin(){gameOver=true; gameRunning=false; scoreDisplay.style.display='none'; pauseBtn.style.display='none';
+  screen.style.display='flex'; screen.innerHTML=`<h1>🎉 VICTOIRE! 🎉</h1><p style="font-size:32px;color:#00d4ff;">THE BEST PLAYER OF THE GALAXY</p>
+  <button onclick="menuMain()">Menu principal</button>`;
 }
 
-function winGame(){
-  gameOver=true;gameRunning=false;gamePaused=false;
-  scoreDisplay.style.display='none';pauseBtn.style.display='none';
-  screen.style.display='flex';
-  screen.innerHTML=`<h1>🎉 YOU WIN! 🎉</h1><p style="font-size:32px;color:#00d4ff;">Score: ${score}</p>
-    <button id="restartBtn">Rejouer</button><button id="menuBtn">Menu principal</button>`;
-  document.getElementById('restartBtn').addEventListener('click',startSolo);
-  document.getElementById('menuBtn').addEventListener('click',menuMain);
-}
 </script>
 </body>
 </html>
