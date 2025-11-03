@@ -1,662 +1,523 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Fusée Spatiale — Finale (avec paliers)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fusée Spatiale</title>
 <style>
-  :root{--bg1:#000428;--bg2:#004e92;--accent:#00d4ff;}
-  html,body{height:100%;margin:0;font-family:Arial, Helvetica, sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff;}
-  #gameContainer{height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-  canvas{background: radial-gradient(circle at 50% 50%, #001a33 0%, #000000 100%); border:3px solid var(--accent); box-shadow:0 0 30px rgba(0,212,255,0.25); display:block; max-width:100%; max-height:100%;}
-  #screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,0.75);z-index:40;padding:20px;text-align:center;}
-  h1{font-size:44px;margin:6px 0;text-shadow:0 0 20px var(--accent);letter-spacing:1px;}
-  p{margin:6px 0;font-size:18px}
-  button{padding:12px 34px;border-radius:28px;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(102,126,234,0.25)}
-  button.small{padding:8px 14px;border-radius:18px;font-size:14px}
-  input[type="text"]{padding:10px 14px;border-radius:18px;border:2px solid var(--accent);background:rgba(255,255,255,0.06);color:white;font-size:16px;outline:none}
-  #scoreDisplay{position:absolute;top:18px;left:18px;font-size:20px;font-weight:700;text-shadow:0 0 10px var(--accent);z-index:30;display:none}
-  #pauseBtn{position:absolute;top:18px;right:18px;z-index:30;display:none}
-  .row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .podium{background:rgba(0,0,0,0.45);padding:14px;border-radius:12px}
-  @media (max-width:720px){h1{font-size:28px} canvas{width:92vw;height:75vh}}
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(180deg, #000428 0%, #004e92 100%);
+  color: white;
+}
+#gameContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+canvas {
+  display: block;
+  background: radial-gradient(circle at 50% 50%, #001a33 0%, #000000 100%);
+  border: 3px solid #00d4ff;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+  max-width: 100%;
+  max-height: 100%;
+}
+#screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10;
+  padding: 20px;
+}
+h1 { font-size:48px;margin:20px 0;text-shadow:0 0 20px #00d4ff;animation:pulse 2s infinite;}
+@keyframes pulse {0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+button {
+  padding:15px 40px;
+  margin:10px;
+  font-size:20px;
+  font-weight:bold;
+  background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:white;
+  border:none;
+  border-radius:50px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 15px rgba(102,126,234,0.4);
+}
+button:hover {transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.6);}
+button:active {transform:translateY(0);}
+input {
+  padding:12px 20px;
+  margin:10px;
+  font-size:18px;
+  border:2px solid #00d4ff;
+  border-radius:25px;
+  background: rgba(255,255,255,0.1);
+  color:white;
+  text-align:center;
+  outline:none;
+  min-width:250px;
+}
+input::placeholder {color: rgba(255,255,255,0.5);}
+#scoreDisplay {
+  position:absolute;
+  top:20px;
+  left:20px;
+  font-size:24px;
+  font-weight:bold;
+  text-shadow:0 0 10px #00d4ff;
+  z-index:5;
+}
+#pauseBtn {
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:10px 20px;
+  font-size:18px;
+  z-index:5;
+  display:none;
+}
+.podium {
+  background: rgba(0,0,0,0.5);
+  padding:20px;
+  border-radius:15px;
+  margin-top:20px;
+  max-height:400px;
+  overflow-y:auto;
+}
+.podium ol {
+  list-style:none;
+  padding:0;
+  margin:10px 0;
+}
+.podium li {
+  padding:10px;
+  margin:5px 0;
+  background: rgba(102,126,234,0.3);
+  border-radius:10px;
+  font-size:18px;
+}
+p {font-size:20px;margin:15px 0;}
 </style>
 </head>
 <body>
 <div id="gameContainer">
-  <div id="scoreDisplay">Score: <span id="score">0</span></div>
-  <button id="pauseBtn" class="small">⏸ Pause</button>
-
-  <div id="screen" aria-live="polite">
+  <div id="scoreDisplay" style="display:none;">Score: <span id="score">0</span></div>
+  <button id="pauseBtn" style="display:none;">⏸ Pause</button>
+  <div id="screen">
     <h1>🚀 Fusée Spatiale 🚀</h1>
-    <p>Entre ton pseudo et choisis Solo ou Multijoueur. Déplacements : ← → / ↑ ↓. ESPACE pour tirer (si bonus laser actif).</p>
-    <div class="row">
-      <input id="pseudoInput" type="text" placeholder="Votre pseudo" maxlength="15" />
-      <button id="validatePseudo">Valider</button>
-    </div>
-    <div class="row">
-      <button id="startBtn">Démarrer</button>
-      <button id="creditsBtn" class="small">Crédits</button>
-    </div>
+    <button id="startBtn">Démarrer</button>
   </div>
-
-  <canvas id="game" width="600" height="800" aria-hidden="false"></canvas>
+  <canvas id="game" width="600" height="800"></canvas>
 </div>
 
 <script>
-/* ===========================
-   VECTOR ICONS (futuristic)
-   =========================== */
-const shieldSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-  <defs><linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#66e0ff'/><stop offset='1' stop-color='#0099cc'/></linearGradient></defs>
-  <path d='M32 3 L12 10 v12 c0 12 10 24 20 28 10-4 20-16 20-28V10z' fill='url(#g1)' stroke='#002a3a' stroke-width='1.8'/>
-  <circle cx='32' cy='28' r='6' fill='rgba(255,255,255,0.12)'/>
-</svg>`);
-
-const pistolSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-  <defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='#ff7a7a'/><stop offset='1' stop-color='#ff1a1a'/></linearGradient></defs>
-  <rect x='6' y='22' width='36' height='12' rx='2' fill='url(#g2)' stroke='#5a0000' stroke-width='1' />
-  <rect x='40' y='24' width='14' height='8' rx='1' fill='#b30000'/>
-  <circle cx='18' cy='28' r='3' fill='#fff'/>
-  <path d='M52 20 L60 16' stroke='#ff7a7a' stroke-width='2' stroke-linecap='round'/>
-</svg>`);
-
-const trophySVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-  <defs><linearGradient id='g3' x1='0' x2='0'><stop offset='0' stop-color='#ffe97a'/><stop offset='1' stop-color='#ffbf00'/></linearGradient></defs>
-  <path d='M16 8h32v8c0 6-8 8-8 8h-16c0 0-8-2-8-8z' fill='url(#g3)' stroke='#b88600' stroke-width='1'/>
-  <rect x='24' y='28' width='16' height='10' fill='url(#g3)' stroke='#b88600'/>
-  <rect x='28' y='40' width='8' height='8' fill='#b88600' />
-</svg>`);
-
-/* ===========================
-   Core game variables
-   =========================== */
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const screen = document.getElementById('screen');
-const scoreDisplay = document.getElementById('scoreDisplay');
-const scoreSpan = document.getElementById('score');
-const pauseBtn = document.getElementById('pauseBtn');
+let screen = document.getElementById('screen');
+let canvas = document.getElementById('game');
+let ctx = canvas.getContext('2d');
+let scoreDisplay = document.getElementById('scoreDisplay');
+let scoreSpan = document.getElementById('score');
+let pauseBtn = document.getElementById('pauseBtn');
 
 let pseudo = '';
 let mode = 'solo';
 let difficulty = 'easy';
 let score = 0;
-let bestSolo = 0;
-
-/* --- NEW: bonusStep controls frequency of bonus spawn based on score thresholds
-   default bonusStep = 100 (every 100 points)
-   at >= 3000 it becomes 75 (more frequent)
-*/
-let bonusStep = 100;
-let nextBonusScore = bonusStep;
-
+let bestScore = 0;
+let gameOver = false;
 let gameRunning = false;
 let gamePaused = false;
-let gameOver = false;
-
 let keys = {};
-let player = null;
+
+let player = { x: 280, y: 740, w: 40, h: 60, hasShield:false, hasLaser:false };
 let asteroids = [];
 let bonuses = [];
+let bullets = [];
 let iaPlayers = [];
+let gameScores = [];
+let nextBonusScore = 100;
+
 let asteroidSpawnTimer = 0;
 let asteroidSpawnInterval = 60;
 
-let particles = [];
-let laserBeams = [];
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  keys[e.key] = true;
+  if (gameRunning && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
+  if(e.code==='Space' && player.hasLaser) shoot();
+});
+document.addEventListener('keyup', e => { if(e.target.tagName==='INPUT') return; keys[e.key]=false; });
 
-/* ===========================
-   UI wiring
-   =========================== */
-document.getElementById('validatePseudo').addEventListener('click', ()=> {
-  const val = document.getElementById('pseudoInput').value.trim();
-  pseudo = val || 'Joueur';
-  showMainMenu();
-});
-document.getElementById('startBtn').addEventListener('click', ()=> {
-  const val = document.getElementById('pseudoInput').value.trim();
-  pseudo = val || 'Joueur';
-  showMainMenu();
-});
-document.getElementById('creditsBtn').addEventListener('click', showCredits);
+document.getElementById('startBtn').addEventListener('click', menuPseudo);
 pauseBtn.addEventListener('click', togglePause);
 
-/* ===========================
-   Menus
-   =========================== */
-function showMainMenu(){
-  screen.style.display = 'flex';
-  screen.innerHTML = `
-    <h1>🚀 Fusée Spatiale 🚀</h1>
-    <p>Bonjour <strong>${escapeHtml(pseudo)}</strong> — Choisis ton mode</p>
-    <div class="row">
-      <button id="soloBtn">Solo</button>
-      <button id="multiBtn">Multijoueur</button>
-    </div>
-    <div style="margin-top:8px" class="row">
-      <button id="creditsSmall" class="small">Crédits</button>
-    </div>
-  `;
-  document.getElementById('soloBtn').addEventListener('click', ()=>{ mode='solo'; startSolo(); });
-  document.getElementById('multiBtn').addEventListener('click', menuMulti);
-  document.getElementById('creditsSmall').addEventListener('click', showCredits);
+function togglePause(){
+  if(gamePaused){
+    gamePaused=false; gameRunning=true;
+    screen.style.display='none';
+    pauseBtn.textContent='⏸ Pause';
+    requestAnimationFrame(update);
+  } else {
+    gamePaused=true;
+    pauseBtn.textContent='▶ Reprendre';
+    showPauseMenu();
+  }
+}
+
+function showPauseMenu(){
+  screen.style.display='flex';
+  screen.innerHTML = `<h1>⏸ Pause</h1><p style="font-size:32px;color:#00d4ff;">Score: ${score}</p>
+    <button id="resumeBtn">▶ Reprendre</button>
+    <button id="menuPauseBtn">Menu Principal</button>`;
+  document.getElementById('resumeBtn').addEventListener('click', togglePause);
+  document.getElementById('menuPauseBtn').addEventListener('click',()=>{gamePaused=false;gameRunning=false;gameOver=true;pauseBtn.style.display='none';scoreDisplay.style.display='none';asteroids=[];iaPlayers=[];menuMain();});
+}
+
+function menuPseudo(){
+  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+    <p>Entrez votre pseudo:</p>
+    <input id="pseudoInput" placeholder="Votre pseudo" maxlength="15"/>
+    <button id="validatePseudo">Valider</button>`;
+  document.getElementById('validatePseudo').addEventListener('click',setPseudo);
+  document.getElementById('pseudoInput').addEventListener('keypress', e=>{if(e.key==='Enter') setPseudo();});
+  document.getElementById('pseudoInput').focus();
+}
+
+function setPseudo(){
+  pseudo=document.getElementById('pseudoInput').value.trim()||'Joueur';
+  menuMain();
+}
+
+function menuMain(){
+  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+    <p>Bonjour ${pseudo}!</p>
+    <button id="soloBtn">Solo</button>
+    <button id="multiBtn">Multijoueur</button>`;
+  document.getElementById('soloBtn').addEventListener('click',startSolo);
+  document.getElementById('multiBtn').addEventListener('click',menuMulti);
 }
 
 function menuMulti(){
-  screen.style.display = 'flex';
-  screen.innerHTML = `
-    <h1>Multijoueur — Difficulté IA</h1>
-    <p>Choisis la difficulté des IA</p>
-    <div class="row">
-      <button id="easyBtn">Facile</button>
-      <button id="mediumBtn">Moyen</button>
-      <button id="hardBtn">Difficile</button>
-    </div>
-    <div style="margin-top:8px" class="row"><button id="backBtn" class="small">Retour</button></div>
-  `;
-  document.getElementById('easyBtn').addEventListener('click', ()=>{ difficulty='easy'; startMulti(); });
-  document.getElementById('mediumBtn').addEventListener('click', ()=>{ difficulty='medium'; startMulti(); });
-  document.getElementById('hardBtn').addEventListener('click', ()=>{ difficulty='hard'; startMulti(); });
-  document.getElementById('backBtn').addEventListener('click', showMainMenu);
+  screen.innerHTML = `<h1>🚀 Fusée Spatiale 🚀</h1>
+    <p>Choisir la difficulté de l'IA:</p>
+    <button id="easyBtn">Facile</button>
+    <button id="mediumBtn">Moyen</button>
+    <button id="hardBtn">Difficile</button>`;
+  document.getElementById('easyBtn').addEventListener('click',()=>startMulti('easy'));
+  document.getElementById('mediumBtn').addEventListener('click',()=>startMulti('medium'));
+  document.getElementById('hardBtn').addEventListener('click',()=>startMulti('hard'));
 }
 
-function showCredits(){
-  screen.style.display='flex';
-  screen.innerHTML = `
-    <h1>Crédits</h1>
-    <p>Jeu créé avec ton aide — icônes vectorielles intégrées.</p>
-    <div class="row"><button id="backCredits" class="small">Retour</button></div>
-  `;
-  document.getElementById('backCredits').addEventListener('click', showMainMenu);
-}
-
-/* ===========================
-   Start / Init
-   =========================== */
-function startSolo(){ mode='solo'; difficulty='easy'; initGame(); }
-function startMulti(){ mode='multi'; initGame(); }
+function startSolo(){mode='solo';initGame();}
+function startMulti(diff){mode='multi';difficulty=diff;initGame();}
 
 function initGame(){
-  // reset
-  score = 0;
-  bonusStep = 100; // reset bonus frequency
-  nextBonusScore = bonusStep;
-  gameOver = false; gameRunning = true; gamePaused = false;
-  asteroidSpawnTimer = 0;
-  asteroidSpawnInterval = (mode==='multi' && difficulty==='hard') ? 40 : 60;
-  asteroids = []; bonuses = []; particles = []; laserBeams = [];
-  player = { x:280, y:740, w:40, h:60, status:{ shield:false, laser:false } };
-  iaPlayers = [];
-
-  if(mode === 'multi') initIA();
-  screen.style.display = 'none';
-  scoreDisplay.style.display = 'block';
-  pauseBtn.style.display = 'block';
-  scoreSpan.textContent = score;
-
-  requestAnimationFrame(update);
+  screen.style.display='none';
+  scoreDisplay.style.display='block';
+  pauseBtn.style.display='block';
+  pauseBtn.textContent='⏸ Pause';
+  gameOver=false; gameRunning=true; gamePaused=false;
+  score=0; scoreSpan.textContent=score;
+  asteroids=[]; bonuses=[]; bullets=[];
+  asteroidSpawnTimer=0; asteroidSpawnInterval=60;
+  player={x:280,y:740,w:40,h:60,hasShield:false,hasLaser:false};
+  nextBonusScore=100;
+  if(mode==='multi') initIA();
+  gameLoop();
 }
 
 function initIA(){
-  iaPlayers = [];
-  const colors = ['#ff6b6b','#ffd93d','#6bcf7f','#a29bfe'];
-  const names = ['Astro','Nova','Cosmos','Stellar'];
+  iaPlayers=[];
+  const colors=['#ff6b6b','#ffd93d','#6bcf7f','#a29bfe'];
+  const names=['Astro','Nova','Cosmos','Stellar'];
   for(let i=0;i<4;i++){
-    const speed = (difficulty==='hard') ? 4 : (difficulty==='medium') ? 3 : 2;
-    iaPlayers.push({ x:100 + i*110, y:740, w:40, h:60, color: colors[i], name: names[i], alive:true, dir:0, speed, status:{shield:false, laser:false} });
+    iaPlayers.push({x:100+i*120,y:740,w:40,h:60,color:colors[i],name:names[i],alive:true,directionX:0,directionY:0,speed:3,hasShield:false,hasLaser:false});
   }
 }
 
-/* ===========================
-   Input handling
-   =========================== */
-document.addEventListener('keydown', (e)=>{
-  if(e.target.tagName === 'INPUT') return;
-  keys[e.key] = true;
-  if(gameRunning && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key)) e.preventDefault();
-  if(e.key === ' ' && gameRunning && player && player.status.laser){
-    spawnLaserBeam(player.x + player.w/2, player.y);
-  }
-});
-document.addEventListener('keyup', (e)=>{ keys[e.key] = false; });
-
-function togglePause(){
-  if(!gameRunning) return;
-  gamePaused = !gamePaused;
-  if(gamePaused){
-    pauseBtn.textContent = '▶ Reprendre';
-    showPauseMenu();
-  } else {
-    pauseBtn.textContent = '⏸ Pause';
-    screen.style.display = 'none';
-    requestAnimationFrame(update);
-  }
-}
-function showPauseMenu(){
-  screen.style.display='flex';
-  screen.innerHTML = `<h1>⏸ Pause</h1><p style="font-size:20px;color:var(--accent)">Score: ${score}</p>
-    <div class="row"><button id="resumeBtn">▶ Reprendre</button><button id="menuPause">Menu Principal</button></div>`;
-  document.getElementById('resumeBtn').addEventListener('click', ()=> togglePause());
-  document.getElementById('menuPause').addEventListener('click', ()=> { gameRunning=false; gamePaused=false; menuResetToMain(); });
-}
-
-/* ===========================
-   Spawn asteroids & bonuses
-   =========================== */
 function spawnAsteroid(){
-  // spawn one asteroid; at >=1000 we spawn an extra one (increase density)
-  const count = (score >= 1000) ? 2 : 1;
-
-  for(let k=0;k<count;k++){
-    const size = 20 + Math.random()*30;
-    let baseSpeed = 2 + Math.random()*2 + (score / 500);
-
-    // === PALIER 500: augmenter vitesse globale des astéroïdes ===
-    if(score >= 500){
-      baseSpeed *= 1.25; // +25% speed after 500 points
-    }
-
-    // mode multi hard gets extra speed
-    if(mode==='multi' && difficulty==='hard') baseSpeed += 1.5;
-
-    asteroids.push({ x: Math.random()*(canvas.width - size), y: -size - 10, w: size, h: size, speed: baseSpeed });
-  }
+  let size=20+Math.random()*30;
+  let speed=2+Math.random()*2+(score/500);
+  if(mode==='multi' && difficulty==='hard') speed+=2;
+  asteroids.push({x:Math.random()*(canvas.width-size),y:-size,w:size,h:size,speed:speed});
 }
-
-const bonusTypes = [
-  { type:'shield', color:'#66ccff', duration:60000 },
-  { type:'laser', color:'#ff3333', duration:60000 },
-  { type:'score', color:'#ffd700', duration:60000 },
-];
 
 function spawnBonus(){
-  const b = JSON.parse(JSON.stringify(bonusTypes[Math.floor(Math.random()*bonusTypes.length)]));
-  b.x = Math.random()*(canvas.width - 36);
-  b.y = -40;
-  b.w = 36; b.h = 36; b.speed = 2;
-
-  // attach icon
-  if(b.type === 'shield') b.icon = shieldSVG;
-  else if(b.type === 'laser') b.icon = pistolSVG;
-  else b.icon = trophySVG;
-
-  bonuses.push(b);
+  const types=['shield','laser','score'];
+  const type=types[Math.floor(Math.random()*types.length)];
+  let size=40;
+  let y=-size;
+  let x=Math.random()*(canvas.width-size);
+  bonuses.push({x,y,w:size,h:size,type,duration:30000}); // 30s
 }
 
-/* ===========================
-   Particles & lasers visuals
-   =========================== */
-function spawnParticles(x,y,color,count=10){
-  for(let i=0;i<count;i++){
-    particles.push({
-      x,y, dx:(Math.random()*2-1)*2, dy:(Math.random()*-1.8-0.6), life:40+Math.random()*30, color, size:2+Math.random()*3
-    });
-  }
-}
-function drawParticles(){
-  for(let i=particles.length-1;i>=0;i--){
-    const p = particles[i];
-    p.x += p.dx; p.y += p.dy; p.dy += 0.06; p.life--;
-    ctx.globalAlpha = Math.max(0, p.life / 70);
-    ctx.fillStyle = p.color;
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 1;
-    if(p.life <= 0) particles.splice(i,1);
-  }
+function movePlayer(){
+  if(keys.ArrowLeft && player.x>0) player.x-=6;
+  if(keys.ArrowRight && player.x+player.w<canvas.width) player.x+=6;
+  if(keys.ArrowUp && player.y>0) player.y-=6;
+  if(keys.ArrowDown && player.y+player.h<canvas.height) player.y+=6;
 }
 
-function spawnLaserBeam(x,y){
-  laserBeams.push({ x, y, life:12 });
-}
-function drawLaserBeams(){
-  for(let i=laserBeams.length-1;i>=0;i--){
-    const b = laserBeams[i];
-    ctx.save();
-    ctx.globalAlpha = b.life / 12;
-    ctx.fillStyle = 'rgba(255,80,60,0.95)';
-    ctx.fillRect(b.x - 4, b.y - 220, 8, 220);
-    ctx.restore();
-    b.life--;
-    if(b.life <= 0) laserBeams.splice(i,1);
-  }
+function moveIA(){
+  iaPlayers.forEach(ai=>{
+    if(!ai.alive) return;
+    // IA simple pour bouger et éviter les asteroids
+    ai.directionX=0; ai.directionY=0;
+    // chercher le plus proche asteroide
+    let threat=asteroids.find(ast=>ast.y>ai.y-200 && Math.abs(ast.x+ast.w/2-(ai.x+ai.w/2))<60);
+    if(difficulty==='easy'){if(Math.random()<0.02) ai.directionX=Math.random()<0.5?-1:1;}
+    else if(difficulty==='medium'){
+      if(threat) ai.directionX=(threat.x+threat.w/2)>(ai.x+ai.w/2)?-1:1;
+    } else if(difficulty==='hard'){
+      if(threat) ai.directionX=(threat.x+threat.w/2)>(ai.x+ai.w/2)?-1:1;
+    }
+    // bonus
+    let bonusTarget=bonuses[0];
+    if(bonusTarget){
+      if(ai.x+ai.w/2<bonusTarget.x+bonusTarget.w/2) ai.directionX=1;
+      else ai.directionX=-1;
+      if(ai.y+ai.h/2<bonusTarget.y+bonusTarget.h/2) ai.directionY=1;
+      else ai.directionY=-1;
+    }
+    ai.x+=ai.directionX*ai.speed;
+    ai.y+=ai.directionY*ai.speed;
+    ai.x=Math.max(0,Math.min(canvas.width-ai.w,ai.x));
+    ai.y=Math.max(0,Math.min(canvas.height-ai.h,ai.y));
+  });
 }
 
-/* ===========================
-   Drawing functions (original visuals)
-   =========================== */
-function drawBackgroundStars(){
-  ctx.fillStyle = 'white';
-  for(let i=0;i<50;i++){
-    const x = (i * 137.5) % canvas.width;
-    const y = ((i * 137.5 + score * 2) % canvas.height);
-    ctx.fillRect(x, y, 2, 2);
-  }
-}
-
-function drawOriginalRocket(x,y,w,h,color,glow){
-  ctx.save();
-  ctx.fillStyle = color;
-  ctx.shadowBlur = 14; ctx.shadowColor = glow || color;
-  ctx.fillRect(x + w*0.3, y + h*0.3, w*0.4, h*0.6);
-  ctx.beginPath(); ctx.moveTo(x + w/2, y); ctx.lineTo(x + w*0.3, y + h*0.3); ctx.lineTo(x + w*0.7, y + h*0.3); ctx.closePath(); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(x + w*0.3, y + h*0.8); ctx.lineTo(x + w*0.1, y + h); ctx.lineTo(x + w*0.3, y + h); ctx.closePath(); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(x + w*0.7, y + h*0.8); ctx.lineTo(x + w*0.9, y + h); ctx.lineTo(x + w*0.7, y + h); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#87CEEB'; ctx.beginPath(); ctx.arc(x + w/2, y + h*0.5, w*0.1, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#FF4500'; ctx.shadowColor = '#FF4500';
+function drawRocket(x,y,w,h,color,glowColor){
+  ctx.fillStyle=color;
+  ctx.shadowBlur=15;
+  ctx.shadowColor=glowColor;
+  ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
   ctx.beginPath();
-  ctx.moveTo(x + w*0.35, y + h);
-  ctx.lineTo(x + w*0.45, y + h*1.2);
-  ctx.lineTo(x + w*0.5, y + h*1.1);
-  ctx.lineTo(x + w*0.55, y + h*1.2);
-  ctx.lineTo(x + w*0.65, y + h);
+  ctx.moveTo(x+w/2,y);
+  ctx.lineTo(x+w*0.3,y+h*0.3);
+  ctx.lineTo(x+w*0.7,y+h*0.3);
   ctx.closePath();
   ctx.fill();
-  ctx.restore();
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.3,y+h*0.8);
+  ctx.lineTo(x+w*0.1,y+h);
+  ctx.lineTo(x+w*0.3,y+h);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.7,y+h*0.8);
+  ctx.lineTo(x+w*0.9,y+h);
+  ctx.lineTo(x+w*0.7,y+h);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle='#87CEEB';
+  ctx.beginPath();
+  ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur=0;
 }
-function drawPlayer(){
-  drawOriginalRocket(player.x, player.y, player.w, player.h, '#00d4ff', '#00d4ff');
-  ctx.fillStyle = '#00d4ff'; ctx.font = '12px Arial'; ctx.textAlign = 'center';
-  ctx.fillText(pseudo, player.x + player.w/2, player.y - 6);
 
-  if(player.status.shield){
-    const t = Date.now()/120;
-    ctx.save();
-    ctx.strokeStyle = 'rgba(0,220,255,0.95)';
-    ctx.lineWidth = 3 + Math.sin(t)*1.6;
+function drawPlayer(){
+  drawRocket(player.x,player.y,player.w,player.h,'#00d4ff','#00d4ff');
+  ctx.fillStyle='#00d4ff';
+  ctx.font='bold 12px Arial';
+  ctx.textAlign='center';
+  ctx.fillText(pseudo,player.x+player.w/2,player.y-5);
+  if(player.hasShield){
+    ctx.strokeStyle='blue';
+    ctx.lineWidth=4;
     ctx.beginPath();
-    ctx.arc(player.x + player.w/2, player.y + player.h/2, player.w + 7 + Math.sin(t)*3, 0, Math.PI*2);
+    ctx.arc(player.x+player.w/2,player.y+player.h/2,player.w,0,Math.PI*2);
     ctx.stroke();
-    ctx.restore();
   }
 }
 
 function drawIA(){
   iaPlayers.forEach(ai=>{
-    if(!ai.alive) return;
-    drawOriginalRocket(ai.x, ai.y, ai.w, ai.h, ai.color, ai.color);
-    ctx.fillStyle = 'white'; ctx.font = '11px Arial'; ctx.textAlign = 'center';
-    ctx.fillText(ai.name, ai.x + ai.w/2, ai.y - 6);
-    if(ai.status.shield){
-      const t = Date.now()/140;
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(ai.x + ai.w/2, ai.y + ai.h/2, ai.w + 6 + Math.sin(t)*2, 0, Math.PI*2);
-      ctx.stroke();
-      ctx.restore();
+    if(ai.alive){
+      drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color,ai.color);
+      ctx.fillStyle='white';
+      ctx.font='12px Arial';
+      ctx.textAlign='center';
+      ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);
+      if(ai.hasShield){
+        ctx.strokeStyle='blue';
+        ctx.lineWidth=4;
+        ctx.beginPath();
+        ctx.arc(ai.x+ai.w/2,ai.y+ai.h/2,ai.w,0,Math.PI*2);
+        ctx.stroke();
+      }
     }
   });
 }
 
 function drawAsteroids(){
   asteroids.forEach(ast=>{
-    ctx.fillStyle = '#8b8b8b';
-    ctx.strokeStyle = '#5a5a5a';
-    ctx.lineWidth = 2;
+    ctx.fillStyle='#8b8b8b';
+    ctx.strokeStyle='#5a5a5a';
+    ctx.lineWidth=2;
+    ctx.shadowBlur=10;
+    ctx.shadowColor='#ffffff';
     ctx.beginPath();
-    ctx.arc(ast.x + ast.w/2, ast.y + ast.h/2, ast.w/2, 0, Math.PI*2);
-    ctx.fill(); ctx.stroke();
+    ctx.arc(ast.x+ast.w/2,ast.y+ast.h/2,ast.w/2,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur=0;
   });
+}
+
+function drawStars(){
+  ctx.fillStyle='white';
+  for(let i=0;i<50;i++){
+    let x=(i*137.5)%canvas.width;
+    let y=((i*137.5+score*2)%canvas.height);
+    ctx.fillRect(x,y,2,2);
+  }
 }
 
 function drawBonuses(){
   bonuses.forEach(b=>{
-    ctx.save();
-    ctx.globalAlpha = 0.98;
-    roundRect(ctx, b.x-3, b.y-3, b.w+6, b.h+6, 8, true, false);
-    const img = new Image();
-    img.src = b.icon;
-    if(img.complete){
-      ctx.drawImage(img, b.x, b.y, b.w, b.h);
-    } else {
-      img.onload = ()=> ctx.drawImage(img, b.x, b.y, b.w, b.h);
+    if(b.type==='shield'){
+      ctx.fillStyle='#00008B';
+      ctx.beginPath();
+      ctx.moveTo(b.x+b.w/2,b.y);
+      ctx.lineTo(b.x+b.w,b.y+b.h/2);
+      ctx.lineTo(b.x+b.w/2,b.y+b.h);
+      ctx.lineTo(b.x,b.y+b.h/2);
+      ctx.closePath();
+      ctx.fill();
+    } else if(b.type==='laser'){
+      ctx.fillStyle='red';
+      ctx.fillRect(b.x+b.w/4,b.y,b.w/2,b.h);
+    } else if(b.type==='score'){
+      ctx.fillStyle='yellow';
+      ctx.beginPath();
+      ctx.moveTo(b.x+b.w/2,b.y);
+      ctx.lineTo(b.x+b.w,b.y+b.h);
+      ctx.lineTo(b.x,b.y+b.h);
+      ctx.closePath();
+      ctx.fill();
     }
-    ctx.restore();
   });
 }
 
-/* helper roundRect */
-function roundRect(ctx, x, y, w, h, r, fill, stroke) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-  if (fill) ctx.fill();
-  if (stroke) ctx.stroke();
+function moveBullets(){
+  bullets.forEach((b,index)=>{
+    b.y-=b.speed;
+    ctx.fillStyle='cyan';
+    ctx.shadowBlur=5; ctx.shadowColor='cyan';
+    ctx.fillRect(b.x,b.y,4,12);
+    ctx.shadowBlur=0;
+    asteroids.forEach((a,ai)=>{
+      if(checkCollision(b,a)){
+        asteroids.splice(ai,1);
+        bullets.splice(index,1);
+        score+=10;
+        scoreSpan.textContent=score;
+      }
+    });
+    if(b.y<0) bullets.splice(index,1);
+  });
 }
 
-/* ===========================
-   Collisions, bonuses, scoring
-   =========================== */
-function rectsOverlap(a,b){ return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
-
-function applyBonusToPlayer(b){
-  if(b.type === 'shield'){
-    player.status.shield = true;
-    setTimeout(()=> player.status.shield = false, b.duration);
-  } else if(b.type === 'laser'){
-    player.status.laser = true;
-    setTimeout(()=> player.status.laser = false, b.duration);
-  } else if(b.type === 'score'){
-    score += 100;
-    scoreSpan.textContent = score;
-    spawnParticles(player.x + player.w/2, player.y, '#ffd700', 18);
-  }
-}
-function applyBonusToIA(ai,b){
-  if(b.type === 'shield'){ ai.status.shield = true; setTimeout(()=> ai.status.shield = false, b.duration); }
-  else if(b.type === 'laser'){ ai.status.laser = true; setTimeout(()=> ai.status.laser = false, b.duration); }
-  else if(b.type === 'score'){ /* IA score unaffected to keep solo/multi separate */ }
+function checkCollision(a,b){
+  return a.x<a.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 }
 
-function handleLaserHitsForPlayer(){
-  if(!player.status.laser) return;
-  for(let i=asteroids.length-1;i>=0;i--){
-    const a = asteroids[i];
-    const dx = Math.abs((a.x + a.w/2) - (player.x + player.w/2));
-    if(dx < 40 && a.y < player.y){
-      asteroids.splice(i,1);
-      score += 10;
-      scoreSpan.textContent = score;
-      spawnParticles(a.x + a.w/2, a.y + a.h/2, '#ff8c00', 12);
-    }
-  }
-}
-
-/* ===========================
-   Update loop (with score paliers logic)
-   =========================== */
 function update(){
-  if(!gameRunning || gamePaused || gameOver) return;
-
+  if(!gameRunning || gameOver || gamePaused) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  drawBackgroundStars();
-
+  drawStars();
+  movePlayer();
+  if(mode==='multi') moveIA();
   asteroidSpawnTimer++;
-  if(asteroidSpawnTimer >= asteroidSpawnInterval){
+  if(asteroidSpawnTimer>=asteroidSpawnInterval){
     spawnAsteroid();
-    asteroidSpawnTimer = 0;
-    if(asteroidSpawnInterval > 28) asteroidSpawnInterval -= 0.35;
+    asteroidSpawnTimer=0;
+    if(asteroidSpawnInterval>30) asteroidSpawnInterval-=0.5;
   }
 
-  /* ========================
-     SCORE THRESHOLDS / PALIERS (DYNAMIC ADJUSTMENTS)
-     - >= 500 : increase asteroid speed multiplier
-     - >= 1000 : spawn an extra asteroid each spawn (handled in spawnAsteroid())
-     - >= 3000 : bonusStep becomes 75 (bonus more frequent)
-     ======================== */
-  if(score >= 500){
-    // speed effect applied inside spawnAsteroid by multiplying baseSpeed
-    // we could optionally do other tweaks here
-  }
-  if(score >= 1000){
-    // spawnAsteroid already spawns 2 when score >= 1000
-  }
-  if(score >= 3000){
-    if(bonusStep !== 75){
-      bonusStep = 75;
-      // recompute nextBonusScore to align with new step without freezing:
-      // set nextBonusScore to nearest future step
-      nextBonusScore = Math.ceil(score / bonusStep) * bonusStep;
-      if(nextBonusScore <= score) nextBonusScore = score + bonusStep;
+  asteroids.forEach((ast,index)=>{
+    ast.y+=ast.speed;
+    if(ast.y>canvas.height){asteroids.splice(index,1);score+=10;scoreSpan.textContent=score;}
+    if(checkCollision(player,ast)&&!player.hasShield) endGame();
+    if(mode==='multi'){
+      iaPlayers.forEach(ai=>{if(ai.alive&&!ai.hasShield&&checkCollision(ai,ast)) ai.alive=false;});
     }
-  }
+  });
 
-  // spawn bonus when reaching nextBonusScore (note: nextBonusScore changes at >=3000)
-  if(score >= nextBonusScore){
-    spawnBonus();
-    nextBonusScore += bonusStep;
-  }
-
-  // move asteroids
-  for(let i=asteroids.length-1;i>=0;i--){
-    const a = asteroids[i];
-    a.y += a.speed;
-    if(a.y > canvas.height + 40){
-      asteroids.splice(i,1);
-      score += 10;
-      scoreSpan.textContent = score;
-      continue;
+  bonuses.forEach((b,index)=>{
+    b.y+=2;
+    if(checkCollision(player,b)){
+      applyBonus(player,b);
+      bonuses.splice(index,1);
     }
-    if(!player.status.shield && rectsOverlap(player, a)){
-      gameOverSequence();
-      return;
-    }
-    if(mode === 'multi'){
+    if(mode==='multi'){
       iaPlayers.forEach(ai=>{
-        if(ai.alive && !ai.status.shield && rectsOverlap(ai, a)) ai.alive = false;
-        else if(ai.alive && ai.status.shield && rectsOverlap(ai, a)){
-          spawnAsteroidExplosion(a.x + a.w/2, a.y + a.h/2);
-          asteroids.splice(i,1);
-        }
+        if(ai.alive&&checkCollision(ai,b)){applyBonus(ai,b);bonuses.splice(index,1);}
       });
     }
-  }
+    if(b.y>canvas.height) bonuses.splice(index,1);
+  });
 
-  // bonuses movement & pickup
-  for(let i=bonuses.length-1;i>=0;i--){
-    const b = bonuses[i];
-    b.y += b.speed;
-    if(b.y > canvas.height + 40){ bonuses.splice(i,1); continue; }
-    if(rectsOverlap(player, b)){ applyBonusToPlayer(b); bonuses.splice(i,1); continue; }
-    if(mode === 'multi'){
-      for(const ai of iaPlayers){
-        if(ai.alive && rectsOverlap(ai, b)){ applyBonusToIA(ai,b); bonuses.splice(i,1); break; }
-      }
-    }
-  }
-
-  // IA behavior
-  if(mode === 'multi'){
-    iaPlayers.forEach(ai=>{
-      if(!ai.alive) return;
-      let threat = null;
-      if(difficulty === 'easy'){
-        if(Math.random() < 0.02) ai.dir = (Math.random()<0.5 ? -1 : 1);
-      } else if(difficulty === 'medium'){
-        threat = asteroids.find(ast => ast.y > ai.y - 160 && Math.abs(ast.x + ast.w/2 - (ai.x + ai.w/2)) < 60);
-        ai.dir = threat ? ((threat.x + threat.w/2 > ai.x + ai.w/2) ? -1 : 1) : 0;
-      } else {
-        threat = asteroids.find(ast => ast.y > ai.y - 220 && Math.abs(ast.x + ast.w/2 - (ai.x + ai.w/2)) < 90);
-        ai.dir = threat ? ((threat.x + threat.w/2 > ai.x + ai.w/2) ? -1 : 1) : 0;
-      }
-      ai.x += ai.dir * ai.speed;
-      ai.x = Math.max(0, Math.min(canvas.width - ai.w, ai.x));
-      if(ai.status.laser && Math.random() < 0.01) spawnLaserBeam(ai.x + ai.w/2, ai.y);
-    });
-  }
-
-  // player movement
-  if(keys['ArrowLeft'] && player.x > 0) player.x -= 6;
-  if(keys['ArrowRight'] && player.x + player.w < canvas.width) player.x += 6;
-  if(keys['ArrowUp'] && player.y > 0) player.y -= 4;
-  if(keys['ArrowDown'] && player.y + player.h < canvas.height) player.y += 4;
-
-  handleLaserHitsForPlayer();
-
-  // draw
   drawAsteroids();
   drawBonuses();
   drawPlayer();
-  if(mode === 'multi') drawIA();
-  drawParticles();
-  drawLaserBeams();
+  if(mode==='multi') drawIA();
+  moveBullets();
 
-  // update score display & check win
-  scoreSpan.textContent = score;
-  if(score >= 5000){
-    gameRunning = false;
-    screen.style.display = 'flex';
-    pauseBtn.style.display = 'none';
-    scoreDisplay.style.display = 'none';
-    if(mode === 'solo'){
-      if(score > bestSolo) bestSolo = score;
-      screen.innerHTML = `<h1>🎉 WIN 🎉</h1><p style="font-size:20px;color:var(--accent)">Score: ${score}</p><div class="row"><button id="menuAfterWin">Menu</button></div>`;
-      document.getElementById('menuAfterWin').addEventListener('click', ()=> menuResetToMain());
-    } else {
-      screen.innerHTML = `<h1>🌌 THE BEST PLAYER OF THE GALAXY 🌌</h1><p style="font-size:20px;color:var(--accent)">Score: ${score}</p><div class="row"><button id="menuAfterWin2">Menu</button></div>`;
-      document.getElementById('menuAfterWin2').addEventListener('click', ()=> menuResetToMain());
-    }
-    return;
-  }
+  // apparition bonus selon score
+  if(score>=nextBonusScore){spawnBonus();nextBonusScore+=110;}
 
-  requestAnimationFrame(update);
+  if(mode==='solo' && score>=5000){winGame();}
+  else requestAnimationFrame(update);
 }
 
-/* ===========================
-   Explosion & particles util
-   =========================== */
-function spawnAsteroidExplosion(x,y){ spawnParticles(x,y,'#cccccc', 14); }
+function gameLoop(){update();}
 
-/* ===========================
-   End game sequence
-   =========================== */
-function gameOverSequence(){
-  gameOver = true; gameRunning = false;
-  scoreDisplay.style.display = 'none'; pauseBtn.style.display='none';
-  screen.style.display = 'flex';
-  if(mode === 'solo'){
-    if(score > bestSolo) bestSolo = score;
-    screen.innerHTML = `<h1>Partie terminée!</h1><p style="font-size:20px;color:var(--accent)">Score: ${score}</p><p style="color:#ffd93d">Meilleur (solo): ${bestSolo}</p><div class="row"><button id="replayBtn">Rejouer</button><button id="menuBtn" class="small">Menu</button></div>`;
-    document.getElementById('replayBtn').addEventListener('click', ()=> startSolo());
-    document.getElementById('menuBtn').addEventListener('click', ()=> menuResetToMain());
-  } else {
-    screen.innerHTML = `<h1>Partie terminée!</h1><p style="font-size:20px;color:var(--accent)">Score: ${score}</p><div class="row"><button id="menuBtn2">Menu</button></div>`;
-    document.getElementById('menuBtn2').addEventListener('click', ()=> menuResetToMain());
-  }
+function shoot(){
+  bullets.push({x:player.x+player.w/2-2,y:player.y,speed:10});
 }
 
-function menuResetToMain(){
-  gameRunning = false; gamePaused = false; gameOver = false;
-  screen.style.display = 'flex';
-  pauseBtn.style.display = 'none';
-  scoreDisplay.style.display = 'none';
-  asteroids = []; bonuses = []; iaPlayers = [];
-  showMainMenu();
+function applyBonus(target,b){
+  if(b.type==='shield'){target.hasShield=true;setTimeout(()=>{target.hasShield=false;},30000);}
+  if(b.type==='laser'){target.hasLaser=true;setTimeout(()=>{target.hasLaser=false;},30000);}
+  if(b.type==='score'){score+=100;scoreSpan.textContent=score;}
 }
 
-/* ===========================
-   Utility helpers
-   =========================== */
-function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+function endGame(){
+  gameOver=true;gameRunning=false;gamePaused=false;
+  scoreDisplay.style.display='none';pauseBtn.style.display='none';
+  screen.style.display='flex';
+  screen.innerHTML=`<h1>Partie terminée!</h1><p style="font-size:32px;color:#00d4ff;">Votre Score: ${score}</p><button id="restartBtn">Rejouer</button><button id="menuBtn">Menu principal</button>`;
+  document.getElementById('restartBtn').addEventListener('click',()=>{if(mode==='solo') startSolo(); else startMulti(difficulty);});
+  document.getElementById('menuBtn').addEventListener('click',menuMain);
+}
 
-/* ===========================
-   bootstrap: show main menu initially
-   =========================== */
-showMainMenu();
+function winGame(){
+  gameOver=true;gameRunning=false;gamePaused=false;
+  scoreDisplay.style.display='none';pauseBtn.style.display='none';
+  screen.style.display='flex';
+  screen.innerHTML=`<h1>🎉 YOU WIN! 🎉</h1><p style="font-size:32px;color:#00d4ff;">Score: ${score}</p>
+    <button id="restartBtn">Rejouer</button><button id="menuBtn">Menu principal</button>`;
+  document.getElementById('restartBtn').addEventListener('click',startSolo);
+  document.getElementById('menuBtn').addEventListener('click',menuMain);
+}
 </script>
 </body>
 </html>
