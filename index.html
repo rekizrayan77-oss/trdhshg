@@ -10,7 +10,7 @@ body {margin:0;padding:0;box-sizing:border-box;height:100vh;overflow:hidden;font
 canvas{display:block;background:radial-gradient(circle at 50% 50%,#001a33 0%,#000 100%);border:3px solid #00d4ff;box-shadow:0 0 30px rgba(0,212,255,0.5);max-width:100%;max-height:100%;}
 #screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(0,0,0,0.85);z-index:10;padding:20px;}
 h1{font-size:48px;margin:20px 0;text-shadow:0 0 20px #00d4ff;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);} }
 button{padding:15px 40px;margin:10px;font-size:20px;font-weight:bold;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:50px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(102,126,234,0.4);}
 button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.6);}
 button:active{transform:translateY(0);}
@@ -51,7 +51,7 @@ let asteroids=[],bonuses=[],bullets=[],iaPlayers=[],nextBonusScore=100;
 
 // Bonus images
 const imgShield=new Image(); imgShield.src='https://i.ibb.co/WpB4T2L/shield.png';
-const imgLaser=new Image(); imgLaser.src='https://i.ibb.co/FbNkWjM/laser.png';
+const imgLaser=new Image(); imgLaser.src='https://i.ibb.co/3sG9Z6Y/gun.png'; // vrai pistolet
 const imgCup=new Image(); imgCup.src='https://i.ibb.co/0mKxTnT/cup.png';
 
 // --- Inputs ---
@@ -169,7 +169,6 @@ function movePlayer(){
 function moveIA(){
   iaPlayers.forEach(ai=>{
     if(!ai.alive) return;
-    // IA simple avec tentative de ramassage bonus
     let target=null;
     bonuses.forEach(b=>{if(b.y>ai.y-200 && Math.abs(b.x-ai.x)<50) target=b;});
     if(target){
@@ -190,6 +189,7 @@ function drawRocket(x,y,w,h,color){
   ctx.fillStyle=color; ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
   ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w*0.3,y+h*0.3); ctx.lineTo(x+w*0.7,y+h*0.3); ctx.closePath(); ctx.fill();
   ctx.fillStyle='#00d4ff'; ctx.beginPath(); ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2); ctx.fill();
+  if(player.hasShield){ctx.strokeStyle='cyan'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(x+w/2,y+h/2,w,0,Math.PI*2); ctx.stroke();}
 }
 
 function drawPlayer(){drawRocket(player.x,player.y,player.w,player.h,'#00d4ff');}
@@ -212,23 +212,18 @@ function update(){
   if(!gameRunning || gameOver || gamePaused) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Stars
   ctx.fillStyle='white'; for(let i=0;i<50;i++){let x=(i*137.5)%canvas.width; let y=((i*137.5+score*2)%canvas.height); ctx.fillRect(x,y,2,2);}
 
   movePlayer(); if(mode==='multi') moveIA();
 
-  // Spawn asteroids
   if(Math.random()<0.02) spawnAsteroid();
-  // Spawn bonuses
   if(score>=nextBonusScore){spawnBonus(); nextBonusScore+=110;}
 
-  // Update asteroids
   asteroids.forEach((a,i)=>{a.y+=a.speed;
     if(a.y>canvas.height) {asteroids.splice(i,1); score+=10; scoreSpan.textContent=score;}
     if(checkCollision(player,a) && !player.hasShield) endGame();
   });
 
-  // Update bonuses
   bonuses.forEach((b,i)=>{b.y+=2;
     if(b.y>canvas.height) bonuses.splice(i,1);
     if(checkCollision(player,b)){
@@ -236,7 +231,6 @@ function update(){
     }
   });
 
-  // Update bullets
   bullets.forEach((b,i)=>{
     b.y-=b.speed;
     asteroids.forEach((a,j)=>{if(checkCollision(b,a)){asteroids.splice(j,1); bullets.splice(i,1);}});
@@ -261,14 +255,10 @@ function activateBonus(p,t){
 // --- End game ---
 function endGame(){gameOver=true; gameRunning=false; scoreDisplay.style.display='none'; pauseBtn.style.display='none';
   screen.style.display='flex'; screen.innerHTML=`<h1>Partie terminée!</h1><p style="font-size:32px;color:#00d4ff;">Votre Score: ${score}</p>
-  <button onclick="menuMain()">Menu principal</button>`;
-}
-
+  <button onclick="menuMain()">Menu principal</button>`;}
 function endGameWin(){gameOver=true; gameRunning=false; scoreDisplay.style.display='none'; pauseBtn.style.display='none';
   screen.style.display='flex'; screen.innerHTML=`<h1>🎉 VICTOIRE! 🎉</h1><p style="font-size:32px;color:#00d4ff;">THE BEST PLAYER OF THE GALAXY</p>
-  <button onclick="menuMain()">Menu principal</button>`;
-}
-
+  <button onclick="menuMain()">Menu principal</button>`;}
 </script>
 </body>
 </html>
