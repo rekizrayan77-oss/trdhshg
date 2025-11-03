@@ -44,7 +44,7 @@ let scoreDisplay=document.getElementById('scoreDisplay');
 let scoreSpan=document.getElementById('score');
 let pauseBtn=document.getElementById('pauseBtn');
 
-let pseudo='',mode='solo',difficulty='easy',score=0,bestScore=0,gameOver=false,gameRunning=false,gamePaused=false,keys={};
+let pseudo='',mode='solo',difficulty='easy',score=0,gameOver=false,gameRunning=false,gamePaused=false,keys={};
 
 let player={x:280,y:740,w:40,h:60,hasShield:false,hasLaser:false};
 let asteroids=[],bonuses=[],bullets=[],iaPlayers=[],nextBonusScore=100;
@@ -59,7 +59,7 @@ document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT') return;
   keys[e.key]=true;
   if(gameRunning&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) e.preventDefault();
-  if(e.code==='Space'&&player.hasLaser) shoot();
+  if(e.code==='Space'&&player.hasLaser) shoot(player);
 });
 document.addEventListener('keyup',e=>{if(e.target.tagName==='INPUT') return; keys[e.key]=false;});
 
@@ -185,29 +185,28 @@ function moveIA(){
 }
 
 // --- Dessin ---
-function drawRocket(x,y,w,h,color){
+function drawRocket(x,y,w,h,color,shield=false){
   ctx.fillStyle=color; ctx.fillRect(x+w*0.3,y+h*0.3,w*0.4,h*0.6);
   ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w*0.3,y+h*0.3); ctx.lineTo(x+w*0.7,y+h*0.3); ctx.closePath(); ctx.fill();
   ctx.fillStyle='#00d4ff'; ctx.beginPath(); ctx.arc(x+w/2,y+h*0.5,w*0.1,0,Math.PI*2); ctx.fill();
-  if(player.hasShield){ctx.strokeStyle='cyan'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(x+w/2,y+h/2,w,0,Math.PI*2); ctx.stroke();}
+  if(shield){ctx.strokeStyle='cyan'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(x+w/2,y+h/2,w,0,Math.PI*2); ctx.stroke();}
 }
 
-function drawPlayer(){drawRocket(player.x,player.y,player.w,player.h,'#00d4ff');}
-
-function drawIA(){iaPlayers.forEach(ai=>{if(ai.alive){drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color); ctx.fillStyle='white'; ctx.font='12px Arial'; ctx.textAlign='center'; ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);}});}
-
+function drawPlayer(){drawRocket(player.x,player.y,player.w,player.h,'#00d4ff',player.hasShield);}
+function drawIA(){iaPlayers.forEach(ai=>{if(ai.alive){drawRocket(ai.x,ai.y,ai.w,ai.h,ai.color,ai.hasShield); ctx.fillStyle='white'; ctx.font='12px Arial'; ctx.textAlign='center'; ctx.fillText(ai.name,ai.x+ai.w/2,ai.y-5);}});}
 function drawAsteroids(){asteroids.forEach(a=>{ctx.fillStyle='#8b8b8b'; ctx.beginPath(); ctx.arc(a.x+a.w/2,a.y+a.h/2,a.w/2,0,Math.PI*2); ctx.fill();});}
-
 function drawBonuses(){bonuses.forEach(b=>{ctx.drawImage(b.img,b.x,b.y,b.w,b.h);});}
-
 function drawBullets(){bullets.forEach(b=>{ctx.fillStyle='red'; ctx.fillRect(b.x,b.y,b.w,b.h);});}
 
 // --- Bullets ---
-function shoot(){bullets.push({x:player.x+player.w/2-2.5,y:player.y-10,w:5,h:10,speed:8});}
+function shoot(shooter){
+  bullets.push({x:shooter.x+shooter.w/2-2.5,y:shooter.y-10,w:5,h:10,speed:8});
+}
 
 // --- Collision ---
 function checkCollision(a,b){return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;}
 
+// --- Update ---
 function update(){
   if(!gameRunning || gameOver || gamePaused) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -222,13 +221,13 @@ function update(){
   asteroids.forEach((a,i)=>{a.y+=a.speed;
     if(a.y>canvas.height) {asteroids.splice(i,1); score+=10; scoreSpan.textContent=score;}
     if(checkCollision(player,a) && !player.hasShield) endGame();
+    iaPlayers.forEach(ai=>{if(ai.alive && !ai.hasShield && checkCollision(ai,a)) ai.alive=false;});
   });
 
   bonuses.forEach((b,i)=>{b.y+=2;
     if(b.y>canvas.height) bonuses.splice(i,1);
-    if(checkCollision(player,b)){
-      activateBonus(player,b.type); bonuses.splice(i,1);
-    }
+    if(checkCollision(player,b)){activateBonus(player,b.type); bonuses.splice(i,1);}
+    iaPlayers.forEach(ai=>{if(ai.alive && checkCollision(ai,b)){activateBonus(ai,b.type); bonuses.splice(i,1);}});
   });
 
   bullets.forEach((b,i)=>{
@@ -239,8 +238,7 @@ function update(){
 
   drawAsteroids(); drawPlayer(); drawIA(); drawBonuses(); drawBullets();
 
-  if(mode==='solo' && score>=5000){endGameWin();}
-  if(mode==='multi') iaPlayers.forEach(ai=>{if(ai.alive && score>=5000){endGameWin();}});
+  if(score>=5000) endGameWin();
 
   requestAnimationFrame(update);
 }
